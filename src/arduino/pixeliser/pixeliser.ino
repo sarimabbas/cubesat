@@ -6,6 +6,10 @@
 // Define Slave Select pin
 #define SD_CS 6
 
+const int NUM_IMAGES = 2;
+String imageNames[] = {"1.JPG", "2.JPG"};
+int imageCounter = 0;
+
 void setup()
 {
   // Set pin 13 to output, otherwise SPI might hang
@@ -36,26 +40,21 @@ void setup()
   // Wait for the PC to signal
   while (!Serial.available())
     ;
-
-  // Send all files on the SD card
-  while (true)
-  {
-    // Open the next file
-    File jpegFile = SD.open("2.JPG");
-
-    pixeliseJpeg(jpegFile);
-
-    jpegFile.close();
-
-    break;
-  }
-
-  // Safely close the root directory
-  //  root.close();
 }
 
 void loop()
 {
-  // Nothing here
-  // We don't need to send the same images over and over again
+  // get the current image
+  String currentImageToTransmit = imageNames[imageCounter];
+
+  // pixelise it
+  File jpegFile = SD.open(currentImageToTransmit);
+  pixeliseJpeg(jpegFile);
+  jpegFile.close();
+
+  // transmit next image next iteration
+  imageCounter = (imageCounter + 1) % NUM_IMAGES;
+
+  // wait 5 seconds before next image
+  delay(5000);
 }
