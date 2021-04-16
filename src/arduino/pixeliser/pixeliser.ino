@@ -14,10 +14,10 @@ void setup()
   // Begin Serial port for communication with PC
   Serial.begin(115200);
 
-   while (!Serial) {
+  while (!Serial)
+  {
     ; // wait for serial port to connect. Needed for native USB port only
   }
-
 
   Serial.println("Setting up...");
 
@@ -31,29 +31,28 @@ void setup()
   }
 
   // Open the root directory
-//  File root = SD.open("/");
+  //  File root = SD.open("/");
 
   // Wait for the PC to signal
-  while(!Serial.available());
+  while (!Serial.available())
+    ;
 
   // Send all files on the SD card
   while (true)
   {
     // Open the next file
-    File jpegFile = SD.open("1.JPG");
-    
+    File jpegFile = SD.open("2.JPG");
+
     pixeliseJpeg(jpegFile);
 
     jpegFile.close();
-    
 
     break;
   }
 
   // Safely close the root directory
-//  root.close();
+  //  root.close();
 }
-
 
 void loop()
 {
