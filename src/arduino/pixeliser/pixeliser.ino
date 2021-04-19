@@ -36,10 +36,6 @@ void setup()
 
   // Open the root directory
   //  File root = SD.open("/");
-
-  // Wait for the PC to signal
-  while (!Serial.available())
-    ;
 }
 
 void loop()
