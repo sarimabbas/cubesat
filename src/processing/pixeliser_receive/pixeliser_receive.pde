@@ -148,7 +148,6 @@ void handlePacket(String packet) {
 
 // This function will be called every time the Serial port receives 240 bytes
 void serialEvent(Serial port) {
-  println("Serial event...");
   try {
     // Read the data into buffer
     port.readBytes(byteBuffer);

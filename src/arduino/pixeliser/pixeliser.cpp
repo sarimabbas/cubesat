@@ -28,10 +28,7 @@ int pixeliseJpeg(File jpegFile) {
   header.toCharArray(dataBuff, 240);
 
   // Send the header packet
-  for (int j = 0; j < 240; j++)
-  {
-    Serial.write(dataBuff[j]);
-  }
+  sendBuff(dataBuff);
 
   // Pointer to the current pixel
   uint16_t *pImg;
@@ -59,8 +56,10 @@ int pixeliseJpeg(File jpegFile) {
     // Repeat for all pixels in the current MCU
     while (mcuPixels--) {
       // Read the color of the pixel as 16-bit integer
-      color = *pImg++;
+      color = *pImg;
+      pImg++;
 
+  
       // Split it into two 8-bit integers
       dataBuff[i] = color >> 8;
       dataBuff[i + 1] = color;
@@ -69,10 +68,7 @@ int pixeliseJpeg(File jpegFile) {
       // If the packet is full, send it
       if (i == 240)
       {
-        for (int j = 0; j < 240; j++)
-        {
-          Serial.write(dataBuff[j]);
-        }
+        sendBuff(dataBuff);
         i = 6;
       }
 
@@ -111,6 +107,10 @@ void initBuff(char *buff) {
   }
 }
 
+// send the buffer over Serial
 void sendBuff(char *buff) {
-
+  for (int i = 0; i < 240; i++)
+  {
+    Serial.write(buff[i]);
+  }
 }
