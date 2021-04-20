@@ -3,6 +3,8 @@ import processing.serial.*;
 
 Serial port;
 
+boolean setupComplete = false;
+
 void setup() {
   // Set the default window size to 200 by 200 pixels
   size(200, 200);
@@ -17,8 +19,7 @@ void setup() {
   // You will have to replace "COM30" with the Arduino COM port number
   try {
     port = new Serial(this, "/dev/cu.usbmodem14401", 115200);
-    // Read 240 bytes at a time
-    port.buffer(240);
+    port.buffer(240); // Read 240 bytes at a time
   } 
   catch(Exception e) {
     println("Could not open port. Exiting...");
@@ -26,14 +27,11 @@ void setup() {
   }
 
   println("finishing setup...");
+  setupComplete = true;
 }
-
-// Buffer to save data incoming from Serial port
-byte[] byteBuffer = new byte[240];
 
 // The coordinate variables
 int x, y, mcuX, mcuY;
-
 
 // A variable to save the current time
 long currentTime;
@@ -50,9 +48,11 @@ int inColor, r, g, b;
 // Image information variables
 int jpegWidth, jpegHeight, jpegMCUSPerRow, jpegMCUSPerCol, mcuWidth, mcuHeight, mcuPixels;
 
-void handleHeaderPacket(String packet) {
+void handleHeaderPacket(byte[] packet) {
+  String packetAsString = new String(packet);
+
   // Remove all whitespace characters
-  String trimmed = packet.trim();
+  String trimmed = packetAsString.trim();
 
   // Split the header by comma
   String[] list = split(trimmed, ',');  
@@ -85,7 +85,7 @@ void handleHeaderPacket(String packet) {
   mcuPixels = mcuWidth * mcuHeight;
 }
 
-void handleDataPacket() {
+void handleDataPacket(byte[] byteBuffer) {
   // Repeat for every two bytes received
   for (int i = 6; i < 240; i += 2) {
     // Combine two 8-bit values into a single 16-bit color
@@ -131,31 +131,33 @@ void handleDataPacket() {
 }
 
 // takes a 240 character string packet and handles the image
-void handlePacket(String packet) {
-  String packetType  = packet.substring(0, 6);
-  //println(packetType);
+void handlePacket(byte[] packet) {
+  // convert packet to string
+  String packetAsString = new String(packet);
+  
+  // get the packet type 
+  String packetType = packetAsString.substring(0, 6);
+  println(packetType);
+  
+  // based on type of packet, send to appropriate function
   if (packetType.indexOf("$ITHDR") == 0) {
     println("header packet received");
     handleHeaderPacket(packet);
   } else if (packetType.indexOf("$ITDAT") == 0) {
-    //print(".");
-    handleDataPacket();
-  } else {
-    // clearing port
-    port.clear();
+    handleDataPacket(packet);
   }
 }
 
 // This function will be called every time the Serial port receives 240 bytes
 void serialEvent(Serial port) {
+  if (!setupComplete) {
+    return;
+  }
   try {
-    // Read the data into buffer
+    // Read data into buffer and send to function
+    byte[] byteBuffer = new byte[240];
     port.readBytes(byteBuffer);
-    // Make a String out of the buffer
-    String packet = new String(byteBuffer);
-    //println(packet);
-    // Decide what to do with it
-    handlePacket(packet);
+    handlePacket(byteBuffer);
   }
   catch(Exception e) {
     e.printStackTrace();
@@ -174,5 +176,4 @@ void draw() {
     // Reset the flag
     received = false;
   }
-  delay(100);
 }

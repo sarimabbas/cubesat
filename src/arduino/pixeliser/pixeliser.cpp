@@ -3,6 +3,8 @@
 #include "Arduino.h"
 #include "pixeliser.h"
 
+const int packetSize = 240;
+
 int pixeliseJpeg(File jpegFile) {
   // Decode the JPEG file
   JpegDec.decodeSdFile(jpegFile);
@@ -43,6 +45,10 @@ int pixeliseJpeg(File jpegFile) {
   // Repeat for all MCUs in the image
   while (JpegDec.read())
   {
+    // prepare data packet
+    //    strcpy(dataBuff, "$ITDAT");
+    //    uint8_t i = 6;
+
     // Save pointer the current pixel
     pImg = JpegDec.pImage;
 
@@ -59,7 +65,7 @@ int pixeliseJpeg(File jpegFile) {
       color = *pImg;
       pImg++;
 
-  
+
       // Split it into two 8-bit integers
       dataBuff[i] = color >> 8;
       dataBuff[i + 1] = color;
@@ -109,8 +115,5 @@ void initBuff(char *buff) {
 
 // send the buffer over Serial
 void sendBuff(char *buff) {
-  for (int i = 0; i < 240; i++)
-  {
-    Serial.write(buff[i]);
-  }
+  Serial.write(buff, packetSize);
 }
