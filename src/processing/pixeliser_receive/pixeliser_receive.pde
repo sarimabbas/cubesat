@@ -134,7 +134,7 @@ void handleDataPacket(byte[] byteBuffer) {
 void handlePacket(byte[] packet) {
   // convert packet to string
   String packetAsString = new String(packet);
-  
+
   // get the packet type 
   String packetType = packetAsString.substring(0, 6);
   println(packetType);
