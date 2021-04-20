@@ -46,6 +46,7 @@ int pixeliseJpeg(File jpegFile) {
   while (JpegDec.read())
   {
     // prepare data packet
+    //    initBuff(dataBuff);
     //    strcpy(dataBuff, "$ITDAT");
     //    uint8_t i = 6;
 

@@ -138,13 +138,20 @@ void handlePacket(byte[] packet) {
   // get the packet type 
   String packetType = packetAsString.substring(0, 6);
   println(packetType);
-  
-  // based on type of packet, send to appropriate function
+
+  // if a header packet, send to the header packet handler function
   if (packetType.indexOf("$ITHDR") == 0) {
-    println("header packet received");
     handleHeaderPacket(packet);
-  } else if (packetType.indexOf("$ITDAT") == 0) {
+  } 
+  // if a data packet, send to the data packet handler function
+  else if (packetType.indexOf("$ITDAT") == 0) {
     handleDataPacket(packet);
+  } 
+  // if the header is not one of the above, 
+  // some mismatch has occured, in which case clear the port
+  // and try again on the next packet
+  else {
+    port.clear();
   }
 }
 
