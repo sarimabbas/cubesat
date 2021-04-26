@@ -1,6 +1,7 @@
 
 // Include the library
 #include "pixeliser.h"
+#include "sensoriser.h"
 #include <JPEGDecoder.h>
 
 // Define Slave Select pin
@@ -9,6 +10,13 @@
 const int NUM_IMAGES = 2;
 String imageNames[] = {"1.JPG", "2.JPG"};
 int imageCounter = 0;
+
+void simulateSensorReadings(double *readings, int numSensors) {
+  for (int i = 0; i < numSensors; i++) {
+    readings[i] = random(1, 10000) / 1.0;
+  }
+}
+
 
 void setup()
 {
@@ -50,6 +58,23 @@ void loop()
 
   // transmit next image next iteration
   imageCounter = (imageCounter + 1) % NUM_IMAGES;
+
+  // simulate some sensor readings
+  const int numSensors = 17;
+  String sensorNames[numSensors] = { "C", "S", "T", "O", "H", "Q", "E", "R", 
+                                     "L", "P", "A", "U", "V", "W", "X", "Y", "Z" };
+  double readings[numSensors] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  simulateSensorReadings(readings, numSensors);
+
+  // take all the readings and put them into one big string
+  String sensorReadings = "";
+  for (int i = 0; i < numSensors; i++) {
+    sensorReadings += sensorNames[i];
+    sensorReadings += readings[i];
+  }
+
+  // transmit as 240 packet
+  sendSensors(sensorReadings);
 
   // wait 5 seconds before next image
   delay(5000);

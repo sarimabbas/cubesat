@@ -28,6 +28,7 @@ void setup() {
 
   println("finishing setup...");
   setupComplete = true;
+  port.clear();
 }
 
 // The coordinate variables
@@ -48,7 +49,11 @@ int inColor, r, g, b;
 // Image information variables
 int jpegWidth, jpegHeight, jpegMCUSPerRow, jpegMCUSPerCol, mcuWidth, mcuHeight, mcuPixels;
 
-void handleHeaderPacket(byte[] packet) {
+void handleSensorDataPacket(byte[] packet) {
+  
+}
+
+void handleImageHeaderPacket(byte[] packet) {
   String packetAsString = new String(packet);
 
   // Remove all whitespace characters
@@ -85,7 +90,7 @@ void handleHeaderPacket(byte[] packet) {
   mcuPixels = mcuWidth * mcuHeight;
 }
 
-void handleDataPacket(byte[] byteBuffer) {
+void handleImageDataPacket(byte[] byteBuffer) {
   // Repeat for every two bytes received
   for (int i = 6; i < 240; i += 2) {
     // Combine two 8-bit values into a single 16-bit color
@@ -141,12 +146,16 @@ void handlePacket(byte[] packet) {
 
   // if a header packet, send to the header packet handler function
   if (packetType.indexOf("$ITHDR") == 0) {
-    handleHeaderPacket(packet);
+    handleImageHeaderPacket(packet);
   } 
   // if a data packet, send to the data packet handler function
   else if (packetType.indexOf("$ITDAT") == 0) {
-    handleDataPacket(packet);
+    handleImageDataPacket(packet);
   } 
+  // if a sensor data packet, send to the sensor handler function
+  else if (packetType.indexOf("$ITSNS") == 0) {
+    handleSensorDataPacket(packet);
+  }
   // if the header is not one of the above, 
   // some mismatch has occured, in which case clear the port
   // and try again on the next packet
