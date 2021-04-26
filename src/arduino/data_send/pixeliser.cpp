@@ -3,14 +3,13 @@
 #include "Arduino.h"
 #include "pixeliser.h"
 
-const int packetSize = 240;
-
-int pixeliseJpeg(File jpegFile) {
+int pixeliseJpeg(File jpegFile)
+{
   // Decode the JPEG file
   JpegDec.decodeSdFile(jpegFile);
 
   // Create a buffer for the packet
-  char dataBuff[240];
+  char dataBuff[packetSize];
 
   // Fill the buffer with zeros
   initBuff(dataBuff);
@@ -27,7 +26,7 @@ int pixeliseJpeg(File jpegFile) {
   header += ",";
   header += jpegFile.name();
   header += ",";
-  header.toCharArray(dataBuff, 240);
+  header.toCharArray(dataBuff, packetSize);
 
   // Send the header packet
   sendBuff(dataBuff);
@@ -61,11 +60,11 @@ int pixeliseJpeg(File jpegFile) {
     uint32_t mcuPixels = JpegDec.MCUWidth * JpegDec.MCUHeight;
 
     // Repeat for all pixels in the current MCU
-    while (mcuPixels--) {
+    while (mcuPixels--)
+    {
       // Read the color of the pixel as 16-bit integer
       color = *pImg;
       pImg++;
-
 
       // Split it into two 8-bit integers
       dataBuff[i] = color >> 8;
@@ -73,12 +72,11 @@ int pixeliseJpeg(File jpegFile) {
       i += 2;
 
       // If the packet is full, send it
-      if (i == 240)
+      if (i == packetSize)
       {
         sendBuff(dataBuff);
         i = 6;
       }
-
 
       // END OF IMAGE
       // If we reach the end of the image, send a packet
@@ -94,27 +92,13 @@ int pixeliseJpeg(File jpegFile) {
         }
 
         // Fill the rest of the packet with zeros
-        for (int k = i; k < 240; k++)
+        for (int k = i; k < packetSize; k++)
         {
-          Serial.write((byte) 0);
+          Serial.write((byte)0);
         }
       }
     }
   }
 
-
   return 0;
-}
-
-
-// Function to fill the packet buffer with zeros
-void initBuff(char *buff) {
-  for (int i = 0; i < 240; i++) {
-    buff[i] = 0;
-  }
-}
-
-// send the buffer over Serial
-void sendBuff(char *buff) {
-  Serial.write(buff, packetSize);
 }

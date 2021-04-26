@@ -18,7 +18,7 @@ void setup() {
   // Start the COM port communication
   // You will have to replace "COM30" with the Arduino COM port number
   try {
-    port = new Serial(this, "/dev/cu.usbmodem14401", 115200);
+    port = new Serial(this, "/dev/cu.usbmodem14301", 115200);
     port.buffer(240); // Read 240 bytes at a time
   } 
   catch(Exception e) {

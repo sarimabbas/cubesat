@@ -5,14 +5,8 @@
 
 #include <SD.h>
 #include "Arduino.h"
+#include "packets.h"
 
 int pixeliseJpeg(File jpegFile);
-
-// Function to fill the packet buffer with zeros
-void initBuff(char *buff);
-
-// send the buffer over Serial
-void sendBuff(char *buff);
-
 
 #endif
