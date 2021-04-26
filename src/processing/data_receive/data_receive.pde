@@ -167,6 +167,7 @@ void handlePacket(byte[] packet) {
 // This function will be called every time the Serial port receives 240 bytes
 void serialEvent(Serial port) {
   if (!setupComplete) {
+    port.clear();
     return;
   }
   try {
