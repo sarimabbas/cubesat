@@ -61,20 +61,14 @@ void loop()
 
   // simulate some sensor readings
   const int numSensors = 17;
-  String sensorNames[numSensors] = { "C", "S", "T", "O", "H", "Q", "E", "R", 
-                                     "L", "P", "A", "U", "V", "W", "X", "Y", "Z" };
+  String sensorNames[numSensors] = { "C", "S", "T", "O", "H", "Q", "E", "R",
+                                     "L", "P", "A", "U", "V", "W", "X", "Y", "Z"
+                                   };
   double readings[numSensors] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   simulateSensorReadings(readings, numSensors);
 
-  // take all the readings and put them into one big string
-  String sensorReadings = "";
-  for (int i = 0; i < numSensors; i++) {
-    sensorReadings += sensorNames[i];
-    sensorReadings += readings[i];
-  }
-
   // transmit as 240 packet
-  sendSensors(sensorReadings);
+  sendSensors(readings, sensorNames, numSensors);
 
   // wait 5 seconds before next image
   delay(5000);

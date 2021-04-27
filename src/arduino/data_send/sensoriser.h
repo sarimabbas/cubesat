@@ -7,8 +7,6 @@
 #include "Arduino.h"
 #include "packets.h"
 
-const String stopSymbol = "$";
-
-int sendSensors(String sensorReadings);
+int sendSensors(double* sensorReadings, String* sensorNames, int numSensors);
 
 #endif

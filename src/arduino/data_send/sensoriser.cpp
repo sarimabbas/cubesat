@@ -3,7 +3,7 @@
 #include "Arduino.h"
 #include "sensoriser.h"
 
-int sendSensors(String sensorReadings) {
+int sendSensors(double* sensorReadings, String* sensorNames, int numSensors) {
 
   // Create a buffer for the packet
   char dataBuff[packetSize];
@@ -12,9 +12,14 @@ int sendSensors(String sensorReadings) {
   initBuff(dataBuff);
 
   // Create a packet with info about the sensors
-  String header = "$ITSNS,";
-  header += sensorReadings;
-  header += stopSymbol;
+  String header = "$SNS,";
+  for(int i = 0; i < numSensors; i++) {
+    header += sensorNames[i];
+    header += sensorReadings[i];
+    header += ",";
+  }
+
+  // copy header to buffer
   header.toCharArray(dataBuff, packetSize);
 
   // Send the packet

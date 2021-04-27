@@ -50,7 +50,15 @@ int inColor, r, g, b;
 int jpegWidth, jpegHeight, jpegMCUSPerRow, jpegMCUSPerCol, mcuWidth, mcuHeight, mcuPixels;
 
 void handleSensorDataPacket(byte[] packet) {
-  
+  String packetAsString = new String(packet);
+  // Remove all whitespace characters
+  String trimmed = packetAsString.trim();
+  // Split the packet by comma
+  String[] list = split(trimmed, ",");
+  // parse out all the sensors
+  for(int i = 0; i < list.length; i++) {
+    println(list[i]);
+  }
 }
 
 void handleImageHeaderPacket(byte[] packet) {
@@ -153,7 +161,7 @@ void handlePacket(byte[] packet) {
     handleImageDataPacket(packet);
   } 
   // if a sensor data packet, send to the sensor handler function
-  else if (packetType.indexOf("$ITSNS") == 0) {
+  else if (packetType.indexOf("$SNS") == 0) {
     handleSensorDataPacket(packet);
   }
   // if the header is not one of the above, 
